@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --color-sage: #7D8C69;
+  --color-sage-light: #F0F2ED;
+  --color-sage-dark: #5F6B50;
+  --color-cream: #FAF9F6;
+  --color-wood: #CDBA9A;
+  --color-text: #1A2421;
+  --color-text-light: #525B58;
+  --color-white: #FFFFFF;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 8px 30px rgba(125, 140, 105, 0.1);
+}
+
+body {
+  font-family: 'Manrope', sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-text);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.zen-card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 1.5rem;
+  border: 1px solid rgba(125, 140, 105, 0.1);
+}
+
+.zen-button {
+  background-color: var(--color-sage);
+  color: var(--color-white);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.zen-button:hover {
+  background-color: var(--color-sage-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.zen-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #E5E7EB;
+  background-color: var(--color-white);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.zen-input:focus {
+  border-color: var(--color-sage);
+  box-shadow: 0 0 0 4px var(--color-sage-light);
+}
+
+.dashboard-gradient {
+  background: radial-gradient(circle at top left, var(--color-sage-light) 0%, var(--color-cream) 100%);
+}

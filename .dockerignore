@@ -1,0 +1,16 @@
+# Dependencias locales: Docker las instala dentro del contenedor con npm ci
+node_modules
+
+# Artefactos de build local: Docker genera los suyos propios
+.nuxt
+.output
+
+# Control de versiones
+.git
+
+# Archivos de entorno local
+.env
+.env.*
+
+# Backups locales
+backups

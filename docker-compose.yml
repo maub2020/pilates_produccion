@@ -1,0 +1,149 @@
+# ============================================================
+# COMANDOS DE USO - VARIANTE CON VOLUMEN LOCAL (BIND MOUNT)
+# ============================================================
+# Este archivo es una alternativa a docker-compose.yml.
+#
+# Diferencia principal respecto al compose original:
+# - Ya no se usa un volumen nombrado de Docker para la BD.
+# - Se monta el archivo local server/db.json directamente dentro del
+#   contenedor.
+#
+# Ventaja:
+# - La BD queda accesible directamente desde Windows en la carpeta del
+#   proyecto.
+#
+# Consideración importante:
+# - El archivo local server/db.json debe existir antes del arranque.
+#   En este proyecto ya existe, así que esta variante es válida.
+#
+# Levantar app (sin backup automático):
+#   docker compose up -d
+#
+# Cambio respecto a la versión anterior:
+# - Antes este compose estaba pensado para construir la imagen en local con
+#   `build:` y normalmente se levantaba con `--build`.
+# - Ahora queda preparado para cliente, así que usa `image:` y asume que la
+#   imagen ya fue importada previamente con `docker load`.
+# - Se recomienda entregar la imagen al cliente con un nombre mas claro:
+#   `pilates-cliente:v1`.
+#
+# Antes de levantarla en el equipo cliente, la imagen debe haberse cargado con:
+#   docker load -i .\pilates-cliente-v1.tar
+#
+# Ver logs:
+#   docker compose logs -f
+#
+# Parar y eliminar contenedores:
+#   docker compose down
+#
+# ============================================================
+# RESTAURAR ULTIMO BACKUP (POWERSHELL, AUTOMATICO)
+# ============================================================
+# En esta variante, la BD vive como archivo local del proyecto.
+# Eso permite hacer backup y restauración con PowerShell sin depender
+# de un volumen nombrado de Docker.
+#
+# 1) Parar servicios:
+#   docker compose down
+#
+# 2) Hacer backup preventivo del estado actual (recomendado):
+#   New-Item -ItemType Directory -Force .\backups | Out-Null
+#   $ts = Get-Date -Format "yyyyMMdd-HHmmss"
+#   Copy-Item .\server\db.json ".\backups\pre-restore-$ts.json"
+#
+# 3) Seleccionar automáticamente el backup más reciente generado por el
+#    servicio pilates-backup:
+#   $latest = Get-ChildItem .\backups\db-backup-*.json | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+#
+# 4) Restaurar ese backup sobre el archivo local:
+#   Copy-Item $latest.FullName .\server\db.json -Force
+#
+# 5) Levantar app de nuevo:
+#   docker compose up -d
+
+services:
+  # Servicio principal de la aplicación Nuxt/Nitro.
+  pilates-app:
+    # Cambio para entorno cliente:
+    # - Antes se usaba `build:` para construir en este mismo equipo.
+    # - Ahora se usa `image:` porque en el ordenador del cliente no queremos
+    #   depender del código fuente ni de una fase de build; solo cargar la
+    #   imagen ya exportada y arrancarla.
+    # - La imagen recomendada para entrega es `pilates-cliente:v1`.
+    #
+    # Configuración anterior, mantenida aquí como referencia:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #
+    # Imagen local original detectada en este equipo:
+    # image: pilates-pilates-app:latest
+    #
+    # Nueva configuración:
+    image: pilates-cliente:v1
+
+    # Nombre fijo del contenedor para facilitar soporte y mantenimiento.
+    container_name: pilates_app
+
+    # Reinicia automáticamente salvo parada manual explícita.
+    restart: unless-stopped
+
+    # Publica la app en el puerto 3001 del host y 3000 dentro del contenedor.
+    ports:
+      - "3001:3000"
+
+    # Variables de entorno de runtime.
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3000"
+
+    # Esta parte se mantiene respecto a la variante anterior:
+    # se monta el archivo local server/db.json directamente en la ruta
+    # que usa la API dentro del contenedor: /app/server/db.json
+    #
+    # Ventaja:
+    # - La BD queda visible y editable desde Windows.
+    #
+    # Riesgo operativo:
+    # - Si borras o sobrescribes el archivo local, impactas directamente
+    #   en la BD usada por la app.
+    #    - ./server/db.json:/app/server/db.json
+    volumes:
+        - "C:/data/db.json:/app/server/db.json"
+    #    - ./backups:/backups
+
+  # Servicio opcional de backups automáticos diarios.
+  # Solo se inicia cuando activas el perfil "backup".
+  #
+  # Cambio respecto a una versión anterior incorrecta:
+  # - El bloque `command:` de backup no debe colgar del servicio principal
+  #   `pilates-app`, porque en Docker Compose el `command` sustituye el comando
+  #   por defecto de la imagen.
+  # - Si ese bucle de backup se deja dentro de `pilates-app`, el contenedor ya
+  #   no arranca la aplicación Nuxt/Nitro y se queda ejecutando solo el script.
+  # - Por eso este comportamiento se deja documentado, pero asociado a un
+  #   servicio separado `pilates-backup`.
+  # pilates-backup:
+  #   image: alpine:3.22
+  #   container_name: pilates_backup
+  #   restart: unless-stopped
+  #   profiles: ["backup"]
+  #   volumes:
+  #     - "C:/data/db.json:/data/db.json:ro"
+  #     - "C:/data/backups:/backups"
+  #   command:
+  #     - /bin/sh
+  #     - -c
+  #     - |
+  #       set -eu
+  #       mkdir -p /backups
+  #       while true; do
+  #         ts=$$(date +%Y%m%d-%H%M%S)
+  #         cp /data/db.json "/backups/db-backup-$${ts}.json"
+  #         find /backups -type f -name "db-backup-*.json" -mtime +7 -delete
+  #         sleep 86400
+  #       done
+
+# En esta variante no se define la sección volumes: al final porque ya no
+# se usa el volumen nombrado pilates_data.

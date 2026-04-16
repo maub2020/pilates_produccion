@@ -1,0 +1,1 @@
+CreateObject("WScript.Shell").Run "cmd /c ""d:\proyectos\utilidades\copia_programada_windows\CronWindowsCopia.bat""", 0, False

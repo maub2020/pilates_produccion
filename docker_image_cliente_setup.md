@@ -19,7 +19,8 @@ docker images
 Si todavía no la has generado, constrúyela:
 
 ```powershell
-docker compose build
+# docker compose build
+docker build -t pilates-cliente:v1 .
 ```
 
 ## 2. Ponerle un nombre claro a la imagen

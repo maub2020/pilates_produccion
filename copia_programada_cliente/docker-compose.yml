@@ -1,0 +1,73 @@
+# ============================================================
+# COMANDOS DE USO - VARIANTE CON VOLUMEN LOCAL (BIND MOUNT)
+# ============================================================
+# Este archivo es una alternativa a docker-compose.yml.
+#
+# Diferencia principal respecto al compose original:
+# - Ya no se usa un volumen nombrado de Docker para la BD.
+# - Se monta el archivo local server/db.json directamente dentro del
+#   contenedor.
+#
+# Ventaja:
+# - La BD queda accesible directamente desde Windows en la carpeta del
+#   proyecto.
+#
+# Consideración importante:
+# - El archivo local server/db.json debe existir antes del arranque.
+#   En este proyecto ya existe, así que esta variante es válida.
+#
+# Levantar app (sin backup automático):
+#   docker compose up -d
+
+
+services:
+  # Servicio principal de la aplicación Nuxt/Nitro.
+  pilates-app:
+    # Cambio para entorno cliente:
+    # - Antes se usaba `build:` para construir en este mismo equipo.
+    # - Ahora se usa `image:` porque en el ordenador del cliente no queremos
+    #   depender del código fuente ni de una fase de build; solo cargar la
+    #   imagen ya exportada y arrancarla.
+    # - La imagen recomendada para entrega es `pilates-cliente:v1`.
+    #
+    # Configuración anterior, mantenida aquí como referencia:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #
+    # Imagen local original detectada en este equipo:
+    # image: pilates-pilates-app:latest
+    #
+    # Nueva configuración:
+    image: pilates-cliente:v1
+
+    # Nombre fijo del contenedor para facilitar soporte y mantenimiento.
+    container_name: pilates_app
+
+    # Reinicia automáticamente salvo parada manual explícita.
+    restart: unless-stopped
+
+    # Publica la app en el puerto 3001 del host y 3000 dentro del contenedor.
+    ports:
+      - "3001:3000"
+
+    # Variables de entorno de runtime.
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3000"
+
+    # Esta parte se mantiene respecto a la variante anterior:
+    # se monta el archivo local server/db.json directamente en la ruta
+    # que usa la API dentro del contenedor: /app/server/db.json
+    #
+    # Ventaja:
+    # - La BD queda visible y editable desde Windows.
+    #
+    # Riesgo operativo:
+    # - Si borras o sobrescribes el archivo local, impactas directamente
+    #   en la BD usada por la app.
+    #    - ./server/db.json:/app/server/db.json
+    volumes:
+        - "C:/Users/Public/pilates/db.json:/app/server/db.json"
+  

@@ -1,0 +1,1 @@
+CreateObject("WScript.Shell").Run "cmd /c ""C:\Users\Public\pilates\cron.bat""", 7, False

@@ -9,20 +9,38 @@
     </div>
 
     <div v-else class="space-y-6">
-      <!-- Year Title -->
-      <div v-if="añoActual" class="flex justify-between items-center px-2">
-        <h2 class="text-3xl font-bold text-[var(--color-text)] tracking-tight">Año {{ añoActual }}</h2>
+      <!-- Year Title & Actions -->
+      <div v-if="añoActual" class="flex justify-between items-end px-2">
+        <h2 class="text-3xl font-bold text-[var(--color-text)] tracking-tight leading-none">Año {{ añoActual }}</h2>
 
-        <!-- Fecha y hora para la impresión (oculto en pantalla) -->
-        <div class="hidden print:block text-right text-[10px] text-gray-500 font-mono">
-          Impreso el: {{ new Date().toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' }) }}
+        <div class="flex items-center gap-3">
+          <!-- Fecha y hora para la impresión (oculto en pantalla) -->
+          <div class="hidden print:block text-right text-[10px] text-gray-500 font-mono">
+            Impreso el: {{ new Date().toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' }) }}
+          </div>
+
+          <!-- Botones de Acción (ocultos en impresión) -->
+          <div class="flex gap-2 print:hidden">
+            <button @click="printTable" class="zen-button shadow-md flex-shrink-0 !py-2 !px-5 text-sm whitespace-nowrap bg-white text-[var(--color-sage-dark)] hover:bg-[var(--color-cream)] border border-[var(--color-sage-light)]">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+              </svg>
+              Imprimir
+            </button>
+            <button @click="openModal('add')" class="zen-button shadow-md flex-shrink-0 !py-2 !px-5 text-sm whitespace-nowrap">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Añadir
+            </button>
+          </div>
         </div>
       </div>
 
       <div class="zen-card overflow-hidden !p-0 border-0 shadow-lg">
         <!-- Toolbar -->
         <div class="p-3 sm:p-4 border-b border-[var(--color-sage-light)] flex flex-col md:flex-row justify-between items-start md:items-center bg-white gap-3 lg:gap-4 print:hidden">
-          <div class="flex flex-row flex-nowrap overflow-x-auto items-center gap-2 w-full md:w-auto pb-1 md:pb-0 custom-scrollbar">
+          <div class="flex flex-row flex-nowrap overflow-x-auto items-center gap-2 w-full pb-1 md:pb-0 custom-scrollbar">
             <div class="relative min-w-[140px] flex-shrink-0">
               <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
                 <svg class="w-4 h-4 text-[var(--color-text-light)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,21 +69,6 @@
               <option value="">Cualquier estado</option>
               <option v-for="e in estadosMes" :key="e" :value="e">{{ e }}</option>
             </select>
-          </div>
-
-          <div class="flex gap-2 h-full print:hidden">
-            <button @click="printTable" class="zen-button shadow-sm flex-shrink-0 !py-1.5 !px-4 text-sm whitespace-nowrap h-full bg-white text-[var(--color-sage-dark)] hover:bg-[var(--color-cream)] border border-[var(--color-sage-light)]">
-              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-              </svg>
-              Imprimir
-            </button>
-            <button @click="openModal('add')" class="zen-button shadow-sm flex-shrink-0 !py-1.5 !px-4 text-sm whitespace-nowrap h-full">
-              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              Añadir
-            </button>
           </div>
         </div>
 
@@ -105,7 +108,9 @@
                 </td>
                 <td class="py-1.5 px-3 text-[var(--color-text)] text-left align-middle print:px-1 print:border-b print:border-gray-200">
                   <div class="text-[10px] font-medium text-[var(--color-text-light)] flex items-center print:text-[11px]">
-                    <svg class="w-3 h-3 mr-1 print:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-3 h-3 mr-1 print:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     {{ alumno.horario }}
                   </div>
                 </td>
@@ -234,7 +239,7 @@
                   <!-- Edit individual months for Edit Mode -->
                   <div v-if="modalMode === 'edit'" class="pt-4 mt-6 border-t border-[var(--color-sage-light)]">
                     <h4 class="text-sm font-bold text-[var(--color-text)] mb-4 tracking-wider uppercase">Estado por meses</h4>
-                    <div class="grid grid-cols-4 gap-4">
+                    <div class="grid grid-cols-6 gap-2">
                       <div v-for="mes in meses" :key="mes" class="flex flex-col bg-[var(--color-cream)]/30 p-2 rounded-xl border border-gray-50">
                         <label class="block text-xs font-bold text-[var(--color-text-light)] mb-1.5 px-1">{{ mes }}</label>
                         <PaymentStatusSelect v-model="formData.pagos[mes]" :estados="estadosMes" :open-up="['Sep', 'Oct', 'Nov', 'Dic'].includes(mes)" />
@@ -500,13 +505,23 @@ const saveModal = async () => {
 @media print {
   @page {
     size: landscape;
-    margin: 0.5cm;
+    margin: 0.5cm 0.5cm 0.5cm 0.5cm;
   }
 
   /* Aseguramos que el fondo de los colores se imprima */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* Ajustes específicos de impresión */
+  .zen-card {
+    box-shadow: none !important;
+    margin-top: 0.5cm !important;
+  }
+
+  .overflow-x-auto {
+    padding: 0.5cm !important;
   }
 }
 </style>

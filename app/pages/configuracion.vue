@@ -11,21 +11,19 @@
     <template v-else>
       <div class="zen-card">
         <h3 class="text-xl font-bold text-[var(--color-text)] mb-5 border-b border-[var(--color-sage-light)] pb-4">Datos de la Empresa</h3>
-        <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold text-[var(--color-text-light)] mb-2 uppercase tracking-wider">Nombre Comercial</label>
             <input v-model="db.empresa.nombre" type="text" class="zen-input text-lg" @change="saveDb">
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-bold text-[var(--color-text-light)] mb-2 uppercase tracking-wider">NIF / CIF</label>
-              <input v-model="db.empresa.nif" type="text" class="zen-input text-lg" @change="saveDb">
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-[var(--color-text-light)] mb-2 uppercase tracking-wider">Dirección</label>
-              <input v-model="db.empresa.direccion" type="text" class="zen-input text-lg" @change="saveDb">
-            </div>
+          <div>
+            <label class="block text-sm font-bold text-[var(--color-text-light)] mb-2 uppercase tracking-wider">NIF / CIF</label>
+            <input v-model="db.empresa.nif" type="text" class="zen-input text-lg" @change="saveDb">
           </div>
+        </div>
+        <div class="mt-6">
+          <label class="block text-sm font-bold text-[var(--color-text-light)] mb-2 uppercase tracking-wider">Dirección</label>
+          <input v-model="db.empresa.direccion" type="text" class="zen-input text-lg w-full" @change="saveDb">
         </div>
       </div>
 
